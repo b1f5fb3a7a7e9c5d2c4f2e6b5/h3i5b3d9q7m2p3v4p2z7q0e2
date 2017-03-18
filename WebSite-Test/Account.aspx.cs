@@ -14,6 +14,8 @@ public partial class _Account : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (PreviousPage == null) Response.Redirect("Default.aspx");
+       
+
 
         DefPage = PreviousPage as _Default;
 

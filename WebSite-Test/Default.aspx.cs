@@ -21,6 +21,8 @@ public partial class _Default : System.Web.UI.Page
 
     protected void ButtonRegistration_Click(object sender, EventArgs e)
     {
+        if (!Page.IsValid) return; //block recaptcha
+
         if (string.IsNullOrWhiteSpace(TextBox3.Text) ||
             string.IsNullOrWhiteSpace(TextBox4.Text) ||
             TextBox4.Text != TextBox5.Text) return;
@@ -39,6 +41,8 @@ public partial class _Default : System.Web.UI.Page
 
     protected void ButtonAuthorization_Click(object sender, EventArgs e)
     {
+        if (!Page.IsValid) return; //block recaptcha
+
         if (!Account.Authorization(new User{
             Login = TextBox1.Text,
             Password = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(TextBox2.Text + Account.Database.GetSalt(TextBox1.Text))))
