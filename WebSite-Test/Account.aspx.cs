@@ -14,17 +14,15 @@ public partial class _Account : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         if (PreviousPage == null) Response.Redirect("Default.aspx");
-       
-
 
         DefPage = PreviousPage as _Default;
 
         this.Title = Guid = System.Guid.NewGuid().ToString();
 
-        Response.Write($"Id: {DefPage.Account.User.Id} <br />" +
-                       $"Login: {DefPage.Account.User.Login} <br />" +
-                       $"Password: {DefPage.Account.User.Password} <br />" +
-                       $"Salt: {DefPage.Account.User.Salt} <br />");
+        //Label1.Text = $"Id: {DefPage.Account.User.Id} \n" +
+        //               $"Login: {DefPage.Account.User.Login} \n" +
+        //               $"Password: {DefPage.Account.User.Password} \n" +
+        //               $"Salt: {DefPage.Account.User.Salt} \n";
 
         DefPage.Account.Database.DeleteSession(DefPage.Account.User.Id);
         DeleteCookie();
@@ -84,5 +82,15 @@ public partial class _Account : System.Web.UI.Page
         {
             Response.Cookies.Add(new HttpCookie("localhost") { Expires = DateTime.Now.AddDays(-1d) });
         }
+    }
+
+    protected void Button3_Click(object sender, EventArgs e)
+    {
+        Label1.Text = $"Id: {DefPage.Account.User.Id} \n" +
+                       $"Login: {DefPage.Account.User.Login} \n" +
+                       $"Password: {DefPage.Account.User.Password} \n" +
+                       $"Salt: {DefPage.Account.User.Salt} \n" +
+                       $"Metadata: \n{DefPage.Account.User.Metadata}";
+        
     }
 }

@@ -15,11 +15,8 @@ public class User
     [Column(Name = "Salt")]
     public string Salt { get; set; }
 
-    [Column(Name = "Age")]
-    public string Age { get; set; }
-
-    [Column(Name = "Email")]
-    public string Email { get; set; }
+    [Column(Name = "Metadata")]
+    public string Metadata { get; set; }
 }
 
 [Table(Name = "Session")]
