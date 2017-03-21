@@ -7,24 +7,18 @@ using System.Web.UI.WebControls;
 
 public partial class _Account : System.Web.UI.Page
 {
-    private string Guid { set; get; }
-
-    private _Default DefPage { get; set; }
-
-    protected void Page_Load(object sender, EventArgs e)
+    protected void Page_Init(object sender, EventArgs e)
     {
-        if (PreviousPage == null) Response.Redirect("Default.aspx");
+        if (DataPage.Сondition != Сondition.Account) Redirect();
 
-        DefPage = PreviousPage as _Default;
+        Title = DataPage.Guid.ToString();
 
-        this.Title = Guid = System.Guid.NewGuid().ToString();
+        Label1.Text = $"Id: {DataPage.Account.User.Id} <br />" +
+                      $"Login: {DataPage.Account.User.Login} <br />" +
+                      $"Password: {DataPage.Account.User.Password} <br />" +
+                      $"Salt: {DataPage.Account.User.Salt} <br />";
 
-        //Label1.Text = $"Id: {DefPage.Account.User.Id} \n" +
-        //               $"Login: {DefPage.Account.User.Login} \n" +
-        //               $"Password: {DefPage.Account.User.Password} \n" +
-        //               $"Salt: {DefPage.Account.User.Salt} \n";
-
-        DefPage.Account.Database.DeleteSession(DefPage.Account.User.Id);
+        DataPage.Account.Database.DeleteSession(DataPage.Account.User.Id);
         DeleteCookie();
 
         CreateSession();
@@ -32,10 +26,10 @@ public partial class _Account : System.Web.UI.Page
 
     private void CreateSession()
     {
-        DefPage.Account.Database.AddSession(new Session
+        DataPage.Account.Database.AddSession(new Session
         {
-            Id = DefPage.Account.User.Id,
-            KeySession = Guid
+            Id = DataPage.Account.User.Id,
+            KeySession = DataPage.Guid.ToString()
         });
 
         CreateCookie();
@@ -46,34 +40,24 @@ public partial class _Account : System.Web.UI.Page
         Response.Cookies.Add(new HttpCookie("localhost")
         {
             Expires = DateTime.Now.AddMinutes(1),
-            ["KeySession"] = Guid
+            ["KeySession"] = DataPage.Guid.ToString()
         });
     }
 
-    /// <summary>
-    /// ВЫйти
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    protected void Button1_Click(object sender, EventArgs e)
+    protected void Exit_Click(object sender, EventArgs e)
     {
-        DefPage.Account.Database.DeleteSession(DefPage.Account.User.Id);
+        DataPage.Account.Database.DeleteSession(DataPage.Account.User.Id);
         DeleteCookie();
 
-        Response.Redirect($"Default.aspx?err=true");
+        Redirect();
     }
 
-    /// <summary>
-    /// Удалить акк
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    protected void Button2_Click(object sender, EventArgs e)
+    protected void DeleteAccount_Click(object sender, EventArgs e)
     {
-        DefPage.Account.DeleteAccount();
+        DataPage.Account.DeleteAccount();
         DeleteCookie();
 
-        Response.Redirect($"Default.aspx?err=true");
+        Redirect();
     }
 
     private void DeleteCookie()
@@ -84,13 +68,19 @@ public partial class _Account : System.Web.UI.Page
         }
     }
 
-    protected void Button3_Click(object sender, EventArgs e)
+    protected void MetaData_Click(object sender, EventArgs e)
     {
-        Label1.Text = $"Id: {DefPage.Account.User.Id} \n" +
-                       $"Login: {DefPage.Account.User.Login} \n" +
-                       $"Password: {DefPage.Account.User.Password} \n" +
-                       $"Salt: {DefPage.Account.User.Salt} \n" +
-                       $"Metadata: \n{DefPage.Account.User.Metadata}";
-        
+        Label1.Text = $"Id: {DataPage.Account.User.Id} <br />" +
+                      $"Login: {DataPage.Account.User.Login} <br />" +
+                      $"Password: {DataPage.Account.User.Password} <br />" +
+                      $"Salt: {DataPage.Account.User.Salt} <br />" +
+                      $"Metadata: <br /> {DPAPI.Decrypt(DataPage.Account.User.Metadata)} <br />";
+
     }
-}
+
+    private void Redirect()
+    {
+        DataPage.Сondition = Сondition.Default;
+        Response.Redirect("http://localhost:57676/Default.aspx", true);
+    }
+} 

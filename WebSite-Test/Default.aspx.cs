@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using System.Security.Cryptography;
 
 public partial class _Default : System.Web.UI.Page
 {
-    public Account Account { private set; get; }
     protected void Page_Load(object sender, EventArgs e)
     {
-        Account = new Account();
-
-        if (Request.QueryString["err"] != null) return;
-
-        if (ExistsCookie()) Redirects();
+        if (ExistsCookie()) RequestCookies();
     }
 
     protected void ButtonRegistration_Click(object sender, EventArgs e)
@@ -29,45 +19,53 @@ public partial class _Default : System.Web.UI.Page
 
         var guid = Guid.NewGuid().ToString();
 
-        if (!Account.Registration(new User
+        if (!DataPage.Account.Registration(new User
         {
             Login = TextBox3.Text,
-            Password = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(TextBox4.Text + guid))),
+            Password = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(
+                Encoding.UTF8.GetBytes(TextBox4.Text + guid))),
             Salt = guid,
-            Metadata = PsApiWrapper.GetPerformanceInfo().GetAll()
+            Metadata = DPAPI.Encrypt(PsApiWrapper.GetPerformanceInfo().GetAll())
         })) return;
 
-        Server.Transfer("Account.aspx", true);
+        Redirect();
     }
 
     protected void ButtonAuthorization_Click(object sender, EventArgs e)
     {
         //if (!Page.IsValid) return; //block recaptcha
 
-        if (!Account.Authorization(new User{
+        if (!DataPage.Account.Authorization(new User{
             Login = TextBox1.Text,
-            Password = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(TextBox2.Text + Account.Database.GetSalt(TextBox1.Text))))
+            Password = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(
+                Encoding.UTF8.GetBytes(TextBox2.Text + DataPage.Account.Database.GetSalt(TextBox1.Text))))
         })) return;
 
-        Server.Transfer("Account.aspx", true);
+        Redirect();
     }
 
-    public bool ExistsCookie()
+    private bool ExistsCookie()
     {
         var cookie = Request.Cookies["localhost"];
 
         var keySession = cookie?["KeySession"];
 
-        return keySession != null && Account.Database.ExistsSession(keySession);
+        return keySession != null && DataPage.Account.Database.ExistsSession(keySession);
     }
 
-    private void Redirects()
+    private void RequestCookies()
     {
         var cookie = Request.Cookies["localhost"];
         if (cookie == null) return;
 
-        Account.SetUser(cookie["KeySession"]);
+        DataPage.Account.SetUser(cookie["KeySession"]);
 
-        Server.Transfer("Account.aspx", true);
+        Redirect();
+    }
+
+    private void Redirect()
+    {
+        DataPage.Сondition = Сondition.Account;
+        Response.Redirect("http://localhost:57676/Account.aspx", true);
     }
 }

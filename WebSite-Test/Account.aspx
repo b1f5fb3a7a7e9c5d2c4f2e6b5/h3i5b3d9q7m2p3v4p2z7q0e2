@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Account.aspx.cs" Inherits="_Account" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Account.aspx.cs" Inherits="_Account" Trace="true"%>
 <%@ Reference Page="~/Default.aspx" %>
 
 <!DOCTYPE html>
@@ -17,10 +17,11 @@
         <br />
         <br />
     
-        <asp:Button ID="Button2" runat="server" OnClick="Button2_Click" Text="Удалить аккаунт" />
-&nbsp;<asp:Button ID="Button3" runat="server" OnClick="Button3_Click" Text="Показать метаданные" />
-&nbsp;<asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Выйти" />
+        <asp:Button ID="ButtonDeleteAccount" runat="server" OnClick="DeleteAccount_Click" Text="Удалить аккаунт" />
+&nbsp;<asp:Button ID="ButtonMetaData" runat="server" OnClick="MetaData_Click" Text="Показать метаданные" />
+&nbsp;<asp:Button ID="ButtonExit" runat="server" OnClick="Exit_Click" Text="Выйти" />
 &nbsp;</div>
     </form>
+     <br />
 </body>
 </html>
